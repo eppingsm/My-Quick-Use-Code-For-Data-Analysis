@@ -1,0 +1,38 @@
+#Libraries 
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+import numpy as np
+
+#Check Code Types 
+df_ten['customer_id'].dtypes
+
+#Check Value Counts 
+Risk_Ratio = df_ten['Risk'].value_counts()
+
+#Use the loc function to set new variables based on something else in Python 
+df_ten.loc[(df_ten['amount']<=2000) & (df_ten['amount']>=0),'Spending_Rank'] = 'Very_Low'
+df_ten.loc[(df_ten['amount']<=4000) & (df_ten['amount']>2000),'Spending_Rank'] = 'Low' 
+df_ten.loc[(df_ten['amount']>15000),'Spending_Rank'] = 'Outlier'
+
+#creating visuals using seaborn 
+#Bar Chart
+df_ten['Spending_Rank'].value_counts().plot.bar(color=['black','blue','blue','teal','teal','teal','teal'])
+
+#take only part of the dataframe for looking at 
+placeholder = df_ten.groupby(df_ten.Max_Outlier)
+
+#Taking a customer average and finding it 
+cust_avg = df_non =  df_non.groupby(['customer_id'],as_index=False).amount.mean()
+#taking a standard deviation 
+deviation =  df_non.groupby(['CPCC'],as_index=False).amount.std()
+#make sure to keep the averages renmaed as python is saving them as amount and we want separate columns on the merge
+cust_avg = cust_avg.rename(columns={"amount":"customer_average"})
+
+#Merges in Python 
+Nordea_1 = df_non.merge(cust_avg, how='left', on='customer_id')
+
+#find count of unique values in a column 
+Nordea_1['customer_average'].nunique()
+
+
