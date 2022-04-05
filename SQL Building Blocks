@@ -1,0 +1,71 @@
+--Simpify pulling non standard countries
+
+
+SELECT country_tr , 
+CASE WHEN A.country_tr LIKE '%DK%' THEN 'DK'
+WHEN A.country_tr LIKE '%NO%' THEN 'NO'
+WHEN A.country_tr LIKE '%FI%' THEN 'FI'
+WHEN A.country_tr LIKE '%SW%' THEN 'SW'
+END AS country_clean
+
+FROM table1  A 
+LEFT JOIN table2 B
+ON A.accountid = B.accountid
+
+
+WHERE 
+country_tr LIKE '%DK%'
+
+
+--NEW 
+--------------
+SELECT 
+ A.accountid
+,A.country_clean
+,B.transaction_type
+,SUM(AMOUNT) sum_amount
+
+FROM
+(
+SELECT accountid, country_tr , 
+CASE WHEN country_tr LIKE '%DK%' THEN 'DK'
+WHEN country_tr LIKE '%NO%' THEN 'NO'
+WHEN country_tr LIKE '%FI%' THEN 'FI'
+WHEN country_tr LIKE '%SW%' THEN 'SW'
+END AS country_clean
+,amount
+
+FROM table1
+WHERE 
+WEEKOFYEAR(date_col) = '22' 
+AND YEAR(date_col) = '2022'
+
+) A
+
+LEFT JOIN 
+(
+SELECT accountid, country_tr , 
+CASE WHEN country_tr LIKE '%DK%' THEN 'DK'
+WHEN country_tr LIKE '%NO%' THEN 'NO'
+WHEN country_tr LIKE '%FI%' THEN 'FI'
+WHEN country_tr LIKE '%SW%' THEN 'SW'
+END AS country_clean
+,transaction_type
+
+FROM table2
+WHERE 
+WEEKOFYEAR(date_col) = '22' 
+AND YEAR(date_col) = '2022'
+)
+
+B 
+ON A.accountid = B.accountid
+WHERE country_clean IN ('NO', 'DK')
+AND transaction_type NOT IN ('C')
+
+GROUP BY 
+ A.accountid
+,A.country_clean
+,B.transaction_type
+
+--------------
